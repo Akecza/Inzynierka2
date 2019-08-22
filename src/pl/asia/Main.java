@@ -42,12 +42,12 @@ public class Main {
 			for (int i=0;i<nog;i++) {
 				float n=0;
 				for (int j=0;j<nog;j++) {
-					n+=node[j].infected*neigh[i][j];
+					n+=node[j].getinfected()*neigh[i][j];
 				}//done counting infected
 				int ni=Math.round(n);
 				//int nr=Math.round(node[i].infected/4)+1;
 				node[i].setnewstate(ni);
-				System.out.print(node[i].healthy + ", " + node[i].infected + ", " + node[i].recovered + ", ");
+				System.out.print(node[i].gethealthy() + ", " + node[i].getinfected() + ", " + node[i].recovered + ", ");
 				
 			}
 			System.out.println(" ");
