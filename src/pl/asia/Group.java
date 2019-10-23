@@ -4,98 +4,96 @@ import java.util.Random;
 
 public class Group {
 
-	int population;
-	int healthy;
-	int infected;
-	int infecting;
-	int recovered;
-	int sick[];
-	int incubating[];
+	private int population;
+	private int healthy;
+	private int infected;
+	private int recovered;
+	private double hlt;
+	private double inf;
+	private double rcv;
+	private int nog;
+	private double neighbour[];
+	private double leaving;
+	private double travel[];
+	private int index;
+
+
 	
-	void setnewstate(int ni) {
-		
-		//if(healthy<ni) ni=healthy;
-		//if(infected<nr) nr=infected;
-		//healthy-=ni;
-		//infected=infected+ni-nr;
-		//recovered+=nr;
-		if(this.healthy<ni) ni=this.healthy;
-		int newsick=this.incubating[0];
-		this.healthy-=ni;
-		this.recovered+=this.sick[0];
-		this.newday(this.incubating);
-		this.newday(this.sick);
-		this.newinfected(ni);
-		this.newsick(newsick);
-		this.infected=this.incubating[0];
-		for(int i=0;i<11;i++) this.infected+=this.sick[i];
-		
-	}
-	
-	public Group (int population, int infected) {
+	public Group (int population, int infected, int ng, int ind) {
+		this.nog=ng;
+		this.index=ind;
 		this.population=population;
 		this.healthy=population-infected;
-		this.incubating = new int[7];
-		this.sick = new int[11];
 		this.recovered=0;
-		this.newinfected(infected);
 		this.infected=infected;
+		this.leaving=0.25;
+		this.neighbour = new double[ng];
+		this.travel = new double[ng];
+		for (int i=0;i<nog;i++) {
+			this.neighbour[i]=1;
+			this.travel[i]=0.05;
+		}
+		this.neighbour[ind]=0;
+		this.travel[ind]=0;
+		this.hlt=(double)this.healthy/(double)this.population;
+		this.inf=(double)this.infected/(double)this.population;
+		this.rcv=(double)this.recovered/(double)this.population;
+	}
+	
+	
+	
+	void setnewstate(double ni, double r, double p) {
+
 		
-		//TODO this
-		
+		double newinf = (1-r)*this.inf + ni;
+		double newhlt = this.hlt-ni;
+		double newrcv = this.rcv + r*this.inf;
+		this.inf=newinf;
+		this.hlt=newhlt;
+		this.rcv=newrcv;
+		this.infected=(int)(this.inf*this.population);
+		this.healthy=(int)(this.hlt*this.population);
+		this.recovered=(int)(this.rcv*this.population);
 		
 	}
 	
-	void newinfected(int newinfected) {
-		for(int i=0;i<newinfected;i++) {
-			Random rand = new Random();
-			int[] tab = new int[]{0,0,0,1,1,1,1,1,2,2,2,2,3,3,4,4,5,6};
-			int x = rand.nextInt(tab.length);
-			x=tab[x];
-			this.incubating[x]++;
+	double newinfected(double r, double p, Group[] gtab) {
+		double t=0;
+		int popmax=0;
+		for(int i=0;i<this.nog;i++) {
+			popmax+=gtab[i].getpopulation();
 		}
 		
-	}
-	
-	void newsick(int newsick) {
-		for(int i=0;i<newsick;i++) {
-			Random rand = new Random();
-			int[] tab = new int[] {3,3,3,3,4,4,4,4,4,5,5,5,5,6,6,7,7,8,9,10};
-			if(rand.nextBoolean()) this.recovered++;
-			else
-			{
-				int x=rand.nextInt(tab.length);
-				x=tab[x];
-				this.sick[x]++;
-			}
+		//t+=(1-r)*this.inf;
+		t+=p*(1-this.leaving)*this.hlt*this.inf;
+		for(int i=0;i<this.nog;i++) {
+			t+=p*(1-this.leaving)*this.hlt*(gtab[i].getpopulation()/popmax)*this.neighbour[i]*this.inf;
+			t+=p*this.hlt*(1-this.neighbour[i])*this.travel[i]*this.inf;
 			
 		}
-		
+
+		return t;
 	}
 	
-	void newday(int[] tab) {
-		for(int i=0;i<tab.length-1;i++) {
-			tab[i]=tab[i+1];
-			
-		}
-		tab[tab.length-1]=0;
+	
+	int getpopulation() {
 		
+		return this.population;
 	}
 	
 	int gethealthy() {
-		int h=this.healthy;
-		for (int i=1;i<this.incubating.length;i++) {
-			h+=this.incubating[i];
-		}
-		return h;
+		
+		return this.healthy;
 	}
 	
 	int getinfected() {
-		int h=this.incubating[0];
-		for (int i=0; i<this.sick.length;i++) {
-			h+=this.sick[i];
-		}
-		return h;
+		
+		return this.infected;
+	}
+	
+	int getrecovered() {
+		
+		return this.recovered;
 	}
 	
 	
