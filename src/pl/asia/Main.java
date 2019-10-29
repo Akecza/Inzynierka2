@@ -32,7 +32,7 @@ public class Main {
 			
 			boolean cb=true;
 			for (int i=0;i<nog;i++) {
-				if(node[i].getinfected()>0) cb=true;
+				if(node[i].getinfected()>0) cb=false;
 			}
 			//TODO break condition
 			if(cb) break;

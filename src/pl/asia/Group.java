@@ -1,6 +1,6 @@
 package pl.asia;
 
-import java.util.Random;
+
 
 public class Group {
 
@@ -19,11 +19,11 @@ public class Group {
 
 
 	
-	public Group (int population, int infected, int ng, int ind) {
+	public Group (int pop, int infected, int ng, int ind) {
 		this.nog=ng;
 		this.index=ind;
-		this.population=population;
-		this.healthy=population-infected;
+		this.population=pop;
+		this.healthy=pop-infected;
 		this.recovered=0;
 		this.infected=infected;
 		this.leaving=0.25;
@@ -67,9 +67,11 @@ public class Group {
 		//t+=(1-r)*this.inf;
 		t+=p*(1-this.leaving)*this.hlt*this.inf;
 		for(int i=0;i<this.nog;i++) {
-			t+=p*(1-this.leaving)*this.hlt*(gtab[i].getpopulation()/popmax)*this.neighbour[i]*this.inf;
-			t+=p*this.hlt*(1-this.neighbour[i])*this.travel[i]*this.inf;
-			
+			if(i!=this.index) {
+			t+=p*(1-this.leaving)*this.hlt*((double)gtab[i].getpopulation()/popmax)*this.neighbour[i]*gtab[i].getinf();
+			//if(i==1)System.out.println(p+" pop: "+ ((double)gtab[i].getpopulation()/popmax)+" hlt: "+popmax);
+			t+=p*this.hlt*(1-this.neighbour[i])*this.travel[i]*gtab[i].getinf();
+			}
 		}
 
 		return t;
@@ -79,6 +81,11 @@ public class Group {
 	int getpopulation() {
 		
 		return this.population;
+	}
+	
+	double getinf() {
+		
+		return this.inf;
 	}
 	
 	int gethealthy() {
