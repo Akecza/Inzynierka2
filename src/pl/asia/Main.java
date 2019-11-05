@@ -22,10 +22,13 @@ public class Main {
 		
 		
 		while(true) { //one day loop
-			
+			double temp[]=new double[nog];
 			for (int i=0;i<nog;i++) {
 				double t=node[i].newinfected(recovery_rate, transmission_rate, node);
-				node[i].setnewstate(t, recovery_rate, transmission_rate);
+				temp[i]=t;
+			}
+			for (int i=0;i<nog;i++) {
+				node[i].setnewstate(temp[i], recovery_rate, transmission_rate);
 			}
 			System.out.print(node[0].gethealthy()+" "+node[0].getinfected()+" "+node[0].getrecovered()+"     ");
 			System.out.println(node[1].gethealthy()+" "+node[1].getinfected()+" "+node[1].getrecovered());
