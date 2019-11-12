@@ -61,7 +61,9 @@ public class Group {
 		double t=0;
 		int popmax=0;
 		for(int i=0;i<this.nog;i++) {
-			popmax+=gtab[i].getpopulation();
+			if(popmax<gtab[i].getpopulation()) {
+				popmax=gtab[i].getpopulation();
+			}
 		}
 		
 		//t+=(1-r)*this.inf;

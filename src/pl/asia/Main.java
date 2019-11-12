@@ -6,8 +6,8 @@ public class Main {
 	public static void main(String[] args) {
 		System.out.println("STAAART");
 		int nog=6; //number of groups;
-		double recovery_rate=0.5;
-		double transmission_rate=0.6;
+		double recovery_rate=0.6;
+		double transmission_rate=0.5;
 		
 		
 		Group node[] = new Group[nog];
@@ -23,6 +23,10 @@ public class Main {
 		
 		while(true) { //one day loop
 			double temp[]=new double[nog];
+			
+			System.out.print(node[0].gethealthy()+" "+node[0].getinfected()+" "+node[0].getrecovered()+"     ");
+			System.out.println(node[1].gethealthy()+" "+node[1].getinfected()+" "+node[1].getrecovered());
+			
 			for (int i=0;i<nog;i++) {
 				double t=node[i].newinfected(recovery_rate, transmission_rate, node);
 				temp[i]=t;
@@ -30,8 +34,8 @@ public class Main {
 			for (int i=0;i<nog;i++) {
 				node[i].setnewstate(temp[i], recovery_rate, transmission_rate);
 			}
-			System.out.print(node[0].gethealthy()+" "+node[0].getinfected()+" "+node[0].getrecovered()+"     ");
-			System.out.println(node[1].gethealthy()+" "+node[1].getinfected()+" "+node[1].getrecovered());
+			//System.out.print(node[0].gethealthy()+" "+node[0].getinfected()+" "+node[0].getrecovered()+"     ");
+			//System.out.println(node[1].gethealthy()+" "+node[1].getinfected()+" "+node[1].getrecovered());
 			
 			boolean cb=true;
 			for (int i=0;i<nog;i++) {
