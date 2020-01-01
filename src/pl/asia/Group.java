@@ -1,6 +1,6 @@
 package pl.asia;
 
-
+import java.util.Random;
 
 public class Group {
 
@@ -20,6 +20,7 @@ public class Group {
 
 	
 	public Group (int pop, int infected, int ng, int ind) {
+		Random rand=new Random();
 		this.nog=ng;
 		this.index=ind;
 		this.population=pop;
@@ -31,6 +32,7 @@ public class Group {
 		this.travel = new double[ng];
 		for (int i=0;i<nog;i++) {
 			this.neighbour[i]=1;
+			//this.travel[i]=this.leaving/(ng-1);
 			this.travel[i]=0.05;
 		}
 		this.neighbour[ind]=0;
@@ -42,12 +44,12 @@ public class Group {
 	
 	
 	
-	void setnewstate(double ni, double r, double p) {
+	void setnewstate(double ni, double nh, double nr) {
 
 		
-		double newinf = (1-r)*this.inf + ni;
-		double newhlt = this.hlt-ni;
-		double newrcv = this.rcv + r*this.inf;
+		double newinf = ni;
+		double newhlt = nh;
+		double newrcv = nr;
 		this.inf=newinf;
 		this.hlt=newhlt;
 		this.rcv=newrcv;
@@ -55,6 +57,31 @@ public class Group {
 		this.healthy=(int)(this.hlt*this.population);
 		this.recovered=(int)(this.rcv*this.population);
 		
+	}
+	
+	double newrecovered(double r, double p, Group[] gtab) {
+		return this.rcv+r*this.getinf();
+	}
+	
+	double newhealthy(double r, double p, Group[] gtab) {
+		double t=this.gethlt();
+		int popmax=0;
+		for(int i=0;i<this.nog;i++) {
+			if(popmax<gtab[i].getpopulation()) {
+				popmax=gtab[i].getpopulation();
+			}
+		}
+		t-=p*(1-this.leaving)*this.hlt*this.inf;
+		for(int i=0;i<this.nog;i++) {
+			if(i!=this.index) {
+			t-=p*(1-this.leaving)*this.hlt*((double)gtab[i].getpopulation()/popmax)*this.neighbour[i]*gtab[i].getinf();
+			t-=p*this.hlt*(1-this.neighbour[i])*this.travel[i]*gtab[i].getinf();
+			}
+		}
+		if(t>0) 
+			return t;
+		else
+			return 0;
 	}
 	
 	double newinfected(double r, double p, Group[] gtab) {
@@ -71,11 +98,15 @@ public class Group {
 		for(int i=0;i<this.nog;i++) {
 			if(i!=this.index) {
 			t+=p*(1-this.leaving)*this.hlt*((double)gtab[i].getpopulation()/popmax)*this.neighbour[i]*gtab[i].getinf();
-			//if(i==1)System.out.println(p+" pop: "+ ((double)gtab[i].getpopulation()/popmax)+" hlt: "+popmax);
 			t+=p*this.hlt*(1-this.neighbour[i])*this.travel[i]*gtab[i].getinf();
 			}
 		}
-
+		
+		if(t>this.gethlt())
+			t=this.gethlt();
+		
+		t+=(1-r)*this.inf;
+		
 		return t;
 	}
 	
@@ -88,6 +119,10 @@ public class Group {
 	double getinf() {
 		
 		return this.inf;
+	}
+	
+	double gethlt() {
+		return this.hlt;
 	}
 	
 	int gethealthy() {
