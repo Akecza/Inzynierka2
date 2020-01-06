@@ -11,9 +11,10 @@ public class Main {
 
 	public static void main(String[] args) throws IOException {
 		System.out.println("STAAART");
+
 		
-		//int groupSize = 3;
-		//double[][][] data = CsvReader.read(groupSize);
+		int nog=18;
+		double[][][] data = CsvReader.read(nog);
 		
 		//for (double[][] dayData : data) {
 		//	for (int i=0;i<3;i++) {
@@ -23,31 +24,33 @@ public class Main {
 		//	}
 		//}
 		
-		BufferedReader reader =new BufferedReader(new InputStreamReader(System.in));
-		
-		System.out.println("Number of groups: ");
-		int nog=Integer.parseInt(reader.readLine()); //number of groups;
-		double recovery_rate=0.6;
-		double transmission_rate=0.5;
+
+		double recovery_rate=0.4;
+		double transmission_rate=0.38;
 		
 		
 		Group node[] = new Group[nog];
-		
-		node[0]=new Group(100,20,nog,0);
-		for (int i=1;i<nog;i++) {//starting conditions
-			node[i] = new Group(100, 0,nog,i);
+		int poplist[] = {69, 42, 130, 27, 49, 35, 91, 35, 22, 81, 89, 36, 58, 66, 21, 21, 66, 28};
+
+		for (int i=0;i<nog;i++) {//starting conditions
+			int pop=poplist[i];
+			int inf=(int) pop/10;
+			node[i] = new Group(pop, inf ,nog, i, data);
+
 		}
 		
 		//starting conditions done
-
-		System.out.print(node[0].gethealthy()+" "+node[0].getinfected()+" "+node[0].getrecovered()+"     ");
-		System.out.println(node[1].gethealthy()+" "+node[1].getinfected()+" "+node[1].getrecovered());
+		int readind=18;
+		readind--;
+		//System.out.println(popmax);
+		System.out.println(node[readind].gethealthy()+" "+node[readind].getinfected()+" "+node[readind].getrecovered());
 		int time=0;
 		
 		
 		
 		while(true) { //one day loop
 			time++;
+			if(time==7)time=0;
 			
 			double[] newinf = new double[nog];
 			double[] newhlt = new double[nog];
@@ -57,8 +60,8 @@ public class Main {
 			int rsum=0;
 			
 			for (int i=0;i<nog;i++) {
-				newinf[i]=node[i].newinfected(recovery_rate, transmission_rate, node);
-				newhlt[i]=node[i].newhealthy(recovery_rate, transmission_rate, node);
+				newinf[i]=node[i].newinfected(recovery_rate, transmission_rate, node, time);
+				newhlt[i]=node[i].newhealthy(recovery_rate, transmission_rate, node, time);
 				newrcv[i]=node[i].newrecovered(recovery_rate, transmission_rate, node);
 			}
 			
@@ -68,15 +71,17 @@ public class Main {
 				isum+=node[i].getinfected();
 				rsum+=node[i].getrecovered();
 			}
-			System.out.print(node[0].gethealthy()+" "+node[0].getinfected()+" "+node[0].getrecovered()+"     ");
-			System.out.print(node[1].gethealthy()+" "+node[1].getinfected()+" "+node[1].getrecovered()+"     ");
-			System.out.println(hsum+" "+isum+" "+rsum);
+			System.out.println(node[readind].gethealthy()+" "+node[readind].getinfected()+" "+node[readind].getrecovered());
+			//System.out.println((hsum+isum+rsum)+" "+hsum+" "+isum+" "+rsum);
 			boolean cb=true;
-			//for (int i=0;i<nog;i++) {
-			//	if(node[i].getinfected()>0) cb=false;
-			//}
+			for (int i=0;i<nog;i++) {
+				if(node[i].getinfected()>0) cb=false;
+			}
 			//TODO break condition
-			if(time>=15) break;
+			if(cb) {
+				//System.out.println(rsum);
+				break;
+			}
 		}
 
 	}

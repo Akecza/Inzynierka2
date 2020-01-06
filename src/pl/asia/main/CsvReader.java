@@ -31,7 +31,7 @@ public class CsvReader {
 	private static double[][] parseCsvFile(int groupsNumber, String fileName) {
 		BufferedReader br = null;
         String line = "";
-        String cvsSplitBy = ",";
+        String cvsSplitBy = " ";
         double[][] dayData = new double[groupsNumber][groupsNumber];
 	   try {
             br = new BufferedReader(new FileReader(fileName));
@@ -41,6 +41,10 @@ public class CsvReader {
             	
                 // use comma as separator
                 String[] lineStringData = line.split(cvsSplitBy);
+                
+         //       for (String a : lineStringData) {
+         //       	System.out.println(a);
+         //       }
                 
                 double[] lineValues = Arrays.stream(lineStringData)
                         .mapToDouble(Double::parseDouble)

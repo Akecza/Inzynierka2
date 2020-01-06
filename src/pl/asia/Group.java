@@ -1,6 +1,5 @@
 package pl.asia;
 
-import java.util.Random;
 
 public class Group {
 
@@ -12,31 +11,32 @@ public class Group {
 	private double inf;
 	private double rcv;
 	private int nog;
-	private double neighbour[];
-	private double leaving;
-	private double travel[];
+	private double leaving[];
 	private int index;
-
-
+	private double [][] neigharray;
+	private double [][] travel;
 	
-	public Group (int pop, int infected, int ng, int ind) {
-		Random rand=new Random();
+	public Group (int pop, int infected, int ng, int ind, double[][][] neigh) {
+		this.neigharray = new double[7][ng];
 		this.nog=ng;
 		this.index=ind;
 		this.population=pop;
 		this.healthy=pop-infected;
 		this.recovered=0;
 		this.infected=infected;
-		this.leaving=0.25;
-		this.neighbour = new double[ng];
-		this.travel = new double[ng];
+		this.leaving = new double[7];
+		this.travel= new double[7][ng];
+	
+		for(int dzien=0; dzien<7; dzien++) {
 		for (int i=0;i<nog;i++) {
-			this.neighbour[i]=1;
-			//this.travel[i]=this.leaving/(ng-1);
-			this.travel[i]=0.05;
+			this.neigharray[dzien][i]=neigh[dzien][i][this.index]+0.01;
+			this.travel[dzien][i]=0;
 		}
-		this.neighbour[ind]=0;
-		this.travel[ind]=0;
+		
+		this.leaving[dzien]=0;
+		
+		}
+
 		this.hlt=(double)this.healthy/(double)this.population;
 		this.inf=(double)this.infected/(double)this.population;
 		this.rcv=(double)this.recovered/(double)this.population;
@@ -63,7 +63,7 @@ public class Group {
 		return this.rcv+r*this.getinf();
 	}
 	
-	double newhealthy(double r, double p, Group[] gtab) {
+	double newhealthy(double r, double p, Group[] gtab, int dzien) {
 		double t=this.gethlt();
 		int popmax=0;
 		for(int i=0;i<this.nog;i++) {
@@ -71,11 +71,11 @@ public class Group {
 				popmax=gtab[i].getpopulation();
 			}
 		}
-		t-=p*(1-this.leaving)*this.hlt*this.inf;
+		t-=p*(1-this.leaving[dzien])*this.hlt*this.inf;
 		for(int i=0;i<this.nog;i++) {
 			if(i!=this.index) {
-			t-=p*(1-this.leaving)*this.hlt*((double)gtab[i].getpopulation()/popmax)*this.neighbour[i]*gtab[i].getinf();
-			t-=p*this.hlt*(1-this.neighbour[i])*this.travel[i]*gtab[i].getinf();
+			t-=p*(1-this.leaving[dzien])*this.hlt*((double)gtab[i].getpopulation()/popmax)*this.neigharray[dzien][i]*gtab[i].getinf();
+			t-=p*this.hlt*(1-this.neigharray[dzien][i])*this.travel[dzien][i]*gtab[i].getinf();
 			}
 		}
 		if(t>0) 
@@ -84,7 +84,7 @@ public class Group {
 			return 0;
 	}
 	
-	double newinfected(double r, double p, Group[] gtab) {
+	double newinfected(double r, double p, Group[] gtab, int dzien) {
 		double t=0;
 		int popmax=0;
 		for(int i=0;i<this.nog;i++) {
@@ -93,12 +93,11 @@ public class Group {
 			}
 		}
 		
-		//t+=(1-r)*this.inf;
-		t+=p*(1-this.leaving)*this.hlt*this.inf;
+		t+=p*(1-this.leaving[dzien])*this.hlt*this.inf;
 		for(int i=0;i<this.nog;i++) {
 			if(i!=this.index) {
-			t+=p*(1-this.leaving)*this.hlt*((double)gtab[i].getpopulation()/popmax)*this.neighbour[i]*gtab[i].getinf();
-			t+=p*this.hlt*(1-this.neighbour[i])*this.travel[i]*gtab[i].getinf();
+			t+=p*(1-this.leaving[dzien])*this.hlt*((double)gtab[i].getpopulation()/popmax)*this.neigharray[dzien][i]*gtab[i].getinf();
+			t+=p*this.hlt*(1-this.neigharray[dzien][i])*this.travel[dzien][i]*gtab[i].getinf();
 			}
 		}
 		
